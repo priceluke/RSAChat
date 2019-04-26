@@ -138,8 +138,7 @@ public class ConnectionPanel extends Operator {
 		btnRsa = new JButton("RSA");
 		btnRsa.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				JOptionPane.showMessageDialog(null, formatRSADetails());
-
+				new Dialogue("Currently connected to '"+ server + "'\n\n"+  secure.display());
 			}
 
 		});
@@ -148,29 +147,6 @@ public class ConnectionPanel extends Operator {
 		frmChatConnection.setVisible(true);
 	}
 
-	private String cropToShow(BigInteger bigInteger_int) {
-		String bigInteger = bigInteger_int.toString();
-		if (bigInteger.length() > 50) {
-			return bigInteger.substring(0, 50) + "...";
-		} else {
-			return bigInteger;
-		}
-	}
-
-	private String formatRSADetails() {
-		StringBuilder rsa = new StringBuilder("RSA Details:\n\n");
-		if (connection_secured) {
-			rsa.append("Connection Secured with " + server + "\n\n");
-			rsa.append("Your Public Key: \n" + cropToShow(secure.getMyPublicKey()[0])
-					+ cropToShow(secure.getMyPublicKey()[1]) + "\n\n");
-			rsa.append("Client Public Key: \n" + cropToShow(secure.getConnectedPublicKey()[0])
-					+ cropToShow(secure.getConnectedPublicKey()[1]) + "\n\n");
-			rsa.append("Your Private Key: \n" + cropToShow(secure.getMyPrivateKey()) + "\n\n");
-		} else {
-			rsa.append("A connection has not yet been secured...");
-		}
-		return rsa.toString().replaceAll("(.{100})", "$1\n");
-	}
 
 	public void listenConnection() {
 		appendUpdate("--- WAITING FOR CLIENT CONNECTION ---");
@@ -191,18 +167,14 @@ public class ConnectionPanel extends Operator {
 					session();
 
 				} catch (EOFException eofException) {
+					// loop until server is requested
 				}
 			}
 		} catch (IOException ioException) {
 			if (!clientConnectShown) {
-				JOptionPane.showMessageDialog(null,
-						"An error has occured, it appears there is another program blocking the port in use.\n\nThis instance will now close.");
-				try {
-					Thread.sleep(500);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-				System.exit(0);
+				new Dialogue(
+						"An error has occured, it appears there is another program blocking the port in use.\n\nThis instance will now close.\n\nIf you want to run two instances for testing, please navigate to the connection screen before opening a second chat.",
+						true, 500);
 			} else {
 				frmChatConnection.setVisible(false);
 			}
@@ -215,8 +187,7 @@ public class ConnectionPanel extends Operator {
 		try {
 			server.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			// already closed
 		}
 		server = null;
 		frmChatConnection.setVisible(false);

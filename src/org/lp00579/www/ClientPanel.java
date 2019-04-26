@@ -60,7 +60,7 @@ public class ClientPanel extends Operator {
 			session();
 
 		} catch (IOException ioEception) {
-			appendUpdate("Failed to connect to " + server);
+			new Dialogue("Failed to connect to " + server, true, 500);
 		}
 	}
 
@@ -148,36 +148,12 @@ public class ClientPanel extends Operator {
 		JButton btnRsa = new JButton("RSA");
 		btnRsa.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				JOptionPane.showMessageDialog(null, formatRSADetails());
+				JOptionPane.showMessageDialog(null, "Connected to : '" + server +"'\n\n"  + secure.display());
 			}
 		});
 		menuBar.add(btnRsa);
 
 		frame.setVisible(true);
-	}
-
-	private String cropToShow(BigInteger bigInteger_int) {
-		String bigInteger = bigInteger_int.toString();
-		if (bigInteger.length() > 50) {
-			return bigInteger.substring(0, 50) + "...";
-		} else {
-			return bigInteger;
-		}
-	}
-
-	private String formatRSADetails() {
-		StringBuilder rsa = new StringBuilder("RSA Details:\n\n");
-		if (connection_secured) {
-			rsa.append("Connection Secured with " + server + "\n\n");
-			rsa.append("Your Public Key: \n" + cropToShow(secure.getMyPublicKey()[0])
-					+ cropToShow(secure.getMyPublicKey()[1]) + "\n\n");
-			rsa.append("Client Public Key: \n" + cropToShow(secure.getConnectedPublicKey()[0])
-					+ cropToShow(secure.getConnectedPublicKey()[1]) + "\n\n");
-			rsa.append("Your Private Key: \n" + cropToShow(secure.getMyPrivateKey()) + "\n\n");
-		} else {
-			rsa.append("A connection has not yet been secured...");
-		}
-		return rsa.toString().replaceAll("(.{100})", "$1\n");
 	}
 
 	@Override

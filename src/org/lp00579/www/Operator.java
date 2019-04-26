@@ -49,7 +49,7 @@ public abstract class Operator {
 
 		Message msg = new Message(myNickname, body);
 		displayMessage(msg);
-		msg.setMessage(secure.encrypt_Client(body));
+		msg.setMessage(secure.internalEncrypt(body));
 		try {
 			Outgoing.writeObject(msg);
 			messages.add(msg);

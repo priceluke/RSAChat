@@ -58,7 +58,7 @@ public class EncryptionHandler {
 		return BigInteger.probablePrime(2048, new Random());
 	}
 
-	public String encrypt_My(String clear) {
+	public String internalEncrypt(String clear) {
 		StringBuilder char_ascii = new StringBuilder();
 		for (int i = 0; i < clear.length(); i++) {
 			char c = clear.charAt(i);
@@ -70,7 +70,7 @@ public class EncryptionHandler {
 		return cipher_ascii.toString();
 	}
 
-	public String encrypt_Client(String clear) {
+	public String encrypt(String clear) {
 		StringBuilder char_ascii = new StringBuilder();
 		for (int i = 0; i < clear.length(); i++) {
 			char c = clear.charAt(i);
@@ -97,5 +97,25 @@ public class EncryptionHandler {
 		}
 
 		return ret_str.toString();
+	}
+	
+	private String crop(BigInteger bigInteger_int) {
+		String bigInteger = bigInteger_int.toString();
+		if (bigInteger.length() > 50) {
+			return bigInteger.substring(0, 50) + "...";
+		} else {
+			return bigInteger;
+		}
+	}
+	
+	public String display() {
+		StringBuilder rsa = new StringBuilder("RSA Details:\n\n");
+			rsa.append("Your Public Key: \n" + crop(getMyPublicKey()[0])
+					+ crop(getMyPublicKey()[1]) + "\n\n");
+			rsa.append("Client Public Key: \n" + crop(getConnectedPublicKey()[0])
+					+ crop(getConnectedPublicKey()[1]) + "\n\n");
+			rsa.append("Your Private Key: \n" + crop(getMyPrivateKey()) + "\n\n");
+
+		return rsa.toString().replaceAll("(.{100})", "$1\n");
 	}
 }
