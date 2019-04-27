@@ -4,32 +4,70 @@ import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.util.Random;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class EncryptionHandler.
+ */
 public class EncryptionHandler {
+
+	/** The my private key. */
 	private BigInteger myPrivateKey;
+
+	/** The my public key. */
 	private BigInteger[] myPublicKey;
+
+	/** The connected public key. */
 	private BigInteger[] connectedPublicKey;
 
+	/**
+	 * Instantiates a new encryption handler.
+	 */
 	public EncryptionHandler() {
 		super();
+		// Constructor creates user's private key on instantiation
 		genPublic();
 	}
-	
+
+	/**
+	 * Gets the user's private key.
+	 *
+	 * @return the private key
+	 */
 	public BigInteger getMyPrivateKey() {
 		return myPrivateKey;
 	}
 
+	/**
+	 * Gets the client's public key.
+	 *
+	 * @return the connected public key
+	 */
 	public BigInteger[] getConnectedPublicKey() {
 		return connectedPublicKey;
 	}
 
+	/**
+	 * Gets the users public key.
+	 *
+	 * @return the public key
+	 */
 	public BigInteger[] getMyPublicKey() {
 		return myPublicKey;
 	}
 
+	/**
+	 * Sets the connected public key.
+	 *
+	 * @param connectedPublicKey
+	 *            the new connected public key
+	 */
 	public void setConnectedPublicKey(BigInteger[] connectedPublicKey) {
 		this.connectedPublicKey = connectedPublicKey;
 	}
 
+	/**
+	 * Gen public.
+	 */
 	private void genPublic() {
 		BigInteger p = genPrime();
 		BigInteger q = genPrime();
@@ -49,15 +87,36 @@ public class EncryptionHandler {
 		genPrivate(phi, e);
 	}
 
+	/**
+	 * Gen private.
+	 *
+	 * @param phi
+	 *            phi
+	 * @param e
+	 *            exponent
+	 */
 	private void genPrivate(BigInteger phi, BigInteger e) {
 		BigInteger d = e.modInverse(phi);
 		this.myPrivateKey = d;
 	}
 
+	/**
+	 * Gen prime.
+	 *
+	 * @return the generated prime number
+	 */
 	private BigInteger genPrime() {
 		return BigInteger.probablePrime(2048, new Random());
 	}
 
+	/**
+	 * Internal encrypt.
+	 * 	Used when encrypting the with the user's own public key
+	 *
+	 * @param clear
+	 *            the clear text
+	 * @return the encrypted string
+	 */
 	public String internalEncrypt(String clear) {
 		StringBuilder char_ascii = new StringBuilder();
 		for (int i = 0; i < clear.length(); i++) {
@@ -70,6 +129,13 @@ public class EncryptionHandler {
 		return cipher_ascii.toString();
 	}
 
+	/**
+	 * Encrypt.
+	 *
+	 * @param clear
+	 *            the clear text
+	 * @return the encrypted string
+	 */
 	public String encrypt(String clear) {
 		StringBuilder char_ascii = new StringBuilder();
 		for (int i = 0; i < clear.length(); i++) {
@@ -82,6 +148,13 @@ public class EncryptionHandler {
 		return cipher_ascii.toString();
 	}
 
+	/**
+	 * Decrypt.
+	 *
+	 * @param cipher
+	 *            the ciphered text
+	 * @return the decrypted string
+	 */
 	public String decrypt(String cipher) {
 		BigInteger cipher_big = new BigInteger(cipher);
 		BigInteger decrypted_big_ascii = cipher_big.modPow(myPrivateKey, this.myPublicKey[0]);
@@ -98,7 +171,14 @@ public class EncryptionHandler {
 
 		return ret_str.toString();
 	}
-	
+
+	/**
+	 * Crop.
+	 *
+	 * @param bigInteger
+	 *            the initial big integer
+	 * @return the cropped big integer (string)
+	 */
 	private String crop(BigInteger bigInteger_int) {
 		String bigInteger = bigInteger_int.toString();
 		if (bigInteger.length() > 50) {
@@ -107,14 +187,18 @@ public class EncryptionHandler {
 			return bigInteger;
 		}
 	}
-	
+
+	/**
+	 * Displays RSA informaiton
+	 *
+	 * @return the information about current session
+	 */
 	public String display() {
 		StringBuilder rsa = new StringBuilder("RSA Details:\n\n");
-			rsa.append("Your Public Key: \n" + crop(getMyPublicKey()[0])
-					+ crop(getMyPublicKey()[1]) + "\n\n");
-			rsa.append("Client Public Key: \n" + crop(getConnectedPublicKey()[0])
-					+ crop(getConnectedPublicKey()[1]) + "\n\n");
-			rsa.append("Your Private Key: \n" + crop(getMyPrivateKey()) + "\n\n");
+		rsa.append("Your Public Key: \n" + crop(getMyPublicKey()[0]) + crop(getMyPublicKey()[1]) + "\n\n");
+		rsa.append(
+				"Client Public Key: \n" + crop(getConnectedPublicKey()[0]) + crop(getConnectedPublicKey()[1]) + "\n\n");
+		rsa.append("Your Private Key: \n" + crop(getMyPrivateKey()) + "\n\n");
 
 		return rsa.toString().replaceAll("(.{100})", "$1\n");
 	}
